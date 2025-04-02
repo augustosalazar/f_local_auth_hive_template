@@ -12,16 +12,19 @@ class HiveSource implements ILocalAuthSource {
   @override
   Future<String> getLoggedUser() async {
     //TODO: implement getLoggedUser with shared preferences
+    return "ToBe implemented";
   }
 
   @override
   Future<User> getUserFromEmail(email) async {
     //TODO: implement getUserFromEmail with HIVE
+    throw UnimplementedError();
   }
 
   @override
   Future<bool> isLogged() async {
     //TODO: implement getLoggedUser with shared preferences
+    return false;
   }
 
   @override
@@ -37,5 +40,6 @@ class HiveSource implements ILocalAuthSource {
   @override
   Future<void> signup(email, password) async {
     //TODO: implement getLoggedUser with HIVE
+    throw UnimplementedError();
   }
 }
