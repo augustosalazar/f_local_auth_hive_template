@@ -10,13 +10,10 @@ import 'domain/repositories/i_auth_repo.dart';
 import 'domain/use_case/auth_use_case.dart';
 import 'ui/controllers/auth_controller.dart';
 import 'ui/my_app.dart';
-
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:path_provider/path_provider.dart';
 
 Future<void> _openBox() async {
-  final directory = await getApplicationDocumentsDirectory();
-  Hive.init(directory.path);
+  Hive.init('./');
   await Hive.initFlutter();
   Hive.registerAdapter(UserDbAdapter());
   await Hive.openBox('userDb');
@@ -29,6 +26,7 @@ void main() async {
   Loggy.initLoggy(logPrinter: const PrettyPrinter(showColors: true));
   await _openBox();
   //TODO: change the ILocalAuthSource to one using HIVE
+  //await Get.putAsync<ILocalAuthSource>(() => HiveSource('userDb').init(),permanent: true);
   Get.put<ILocalAuthSource>(SharedPrefLocalAuthSource());
   Get.put<IAuthRepo>(AuthRepo(Get.find()));
   Get.put(AuthUseCase(Get.find()));

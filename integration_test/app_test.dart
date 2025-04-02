@@ -12,24 +12,11 @@ import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:loggy/loggy.dart';
-import 'package:path_provider/path_provider.dart';
-
-Future<List<Box>> _openBox() async {
-  final directory = await getApplicationDocumentsDirectory();
-  Hive.init(directory.path);
-  List<Box> boxList = [];
-  await Hive.initFlutter();
-  Hive.registerAdapter(UserDbAdapter());
-  boxList.add(await Hive.openBox('userDb'));
-  Hive.box('userDb').clear(); // clear the box before each test
-  logInfo("Box opened userDb ${await Hive.boxExists('userDb')}");
-  return boxList;
-}
 
 Future<Widget> createHomeScreen() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await _openBox();
-  Get.put<ILocalAuthSource>(HiveSource());
+  await Get.putAsync<ILocalAuthSource>(() => HiveSource('testBox').init(),
+      permanent: true);
   Get.put<IAuthRepo>(AuthRepo(Get.find()));
   Get.put(AuthUseCase(Get.find()));
   Get.put(AuthController(Get.find()));
@@ -107,6 +94,9 @@ void main() {
     expect(find.byKey(const Key('contentScaffold')), findsOneWidget);
 
     // go to profile page
+
+    expect(find.byIcon(Icons.verified_user), findsOneWidget);
+
     await tester.tap(find.byIcon(Icons.verified_user));
     await tester.pumpAndSettle();
 
@@ -135,5 +125,7 @@ void main() {
     // logout
     await tester.tap(find.byKey(const Key('profileLogout')));
     await tester.pumpAndSettle();
+
+    await Hive.box('testBox').clear();
   });
 }
